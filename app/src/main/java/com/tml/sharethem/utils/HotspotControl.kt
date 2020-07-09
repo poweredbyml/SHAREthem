@@ -8,6 +8,7 @@ import android.net.wifi.WifiManager.LocalOnlyHotspotReservation
 import android.os.Build
 import android.os.Handler
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import com.tml.sharethem.sender.SHAREthemActivity
 import java.io.BufferedReader

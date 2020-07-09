@@ -15,15 +15,14 @@
  */
 package com.tml.sharethem.sender
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
@@ -31,6 +30,7 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.tml.sharethem.R
 import com.tml.sharethem.utils.HotspotControl
@@ -123,11 +123,21 @@ class SHAREthemService : Service() {
      * @return Notification
      */
     private fun getShareThemNotification(text: String, addStopAction: Boolean): Notification {
+
+        val channelId =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    createNotificationChannel("my_service", "My Background Service")
+                } else {
+                    // If earlier version channel ID is not used
+                    // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
+                    ""
+                }
+
         val notificationIntent = Intent(applicationContext, SHAREthemActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val builder = NotificationCompat.Builder(this).apply {
+        val builder = NotificationCompat.Builder(this, channelId).apply {
             setContentIntent(pendingIntent)
             setSmallIcon(R.mipmap.ic_launcher)
             setWhen(System.currentTimeMillis())
@@ -137,6 +147,17 @@ class SHAREthemService : Service() {
             if (addStopAction) addAction(stopAction)
         }
         return builder.build()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(channelId: String, channelName: String): String{
+        val chan = NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE)
+        chan.lightColor = Color.BLUE
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        service.createNotificationChannel(chan)
+        return channelId
     }
 
     /**

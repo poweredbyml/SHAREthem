@@ -3,6 +3,8 @@ package com.tml.sharethem.demo
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,12 +24,24 @@ import java.io.File
 class DemoActivity : AppCompatActivity() {
     var dialog: FilePickerDialog? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_demo)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.app_name)
+
+        val send = findViewById<Button>(R.id.sendButton)
+        val  receive = findViewById<Button>(R.id.receiveButton)
+
+        send.setOnClickListener {
+            sendFiles()
+        }
+
+        receive.setOnClickListener {
+            receiveFiles()
+        }
     }
 
     fun sendFiles() {
